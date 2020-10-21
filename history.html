@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js example</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://vuejs.org/js/vue.js"></script>
+</head>
+<body>
+    <div id="app" class="calculator-history">
+        <ul class="u-list">
+            <p>History</p>
+            <li><p>{{prevOperation}} = {{ prevHistory }}</p></li>
+            <li v-for="savedhistory in history"></li>
+            <li v-for="responder in responders.history">{{ responder.data }}</li>
+        </ul>
+    </div>
+</body>
+
+<script>
+ const app = new Vue({
+ el: "#app",
+ data: {    
+    prevOperation: '',
+    prevHistory: '',
+    responders: []
+  },
+  created: function() {
+    var history = localStorage.getItem('savedHistory');
+    var parsed = JSON.parse(history)
+    var p = parsed.map (x => {
+      this.prevHistory = x.data
+      this.prevOperation = x.operation
+    }).join('')
+    console.log(this.prevOperation)
+  }
+    
+ })
+  </script>
+</html>

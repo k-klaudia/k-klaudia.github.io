@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js example</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://vuejs.org/js/vue.js"></script>
+</head>
+<body>
+  
+    <div id="app" class="calculator"> 
+      <div class="output">
+        <div class="display">{{ current || '0' }}</div>
+      </div>
+      <div @click="clear" class="btn">AC</div>
+      <div @click="deletePrev" class="btn">del</div>
+      <div @click="plusMinus" class="btn">+/-</div>
+      <div @click="convertToBinary" class="btn">BIN</div>
+      <div @click="convertToHex" class="btn">HEX</div>
+      <div @click="convertToOctal" class="btn">OCT</div>     
+      <div @click="convertToDecimal" class="btn">DEC</div>        
+      <div @click="division" class="btn operator">÷</div>      
+      <div @click="append('7')" class="btn">7</div>
+      <div @click="append('8')" class="btn">8</div>
+      <div @click="append('9')" class="btn">9</div>
+      <div @click="multiplication" class="btn operator">*</div>
+      <div @click="append('4')" class="btn">4</div>
+      <div @click="append('5')" class="btn">5</div>
+      <div @click="append('6')" class="btn">6</div>
+      <div @click="subtraction" class="btn operator">-</div>
+      <div @click="append('1')" class="btn">1</div>
+      <div @click="append('2')" class="btn">2</div>
+      <div @click="append('3')" class="btn">3</div>
+      <div @click="addition" class="btn operator">+</div>
+      <div @click="append('0')" class="btn">0</div>
+      <div @click="dot" class="btn">.</div>
+      <div @click="equal" class="btn operator span">=</div>   
+        </div> 
+    </div>
+    <br>
+    <h3 class="history"><a href="./history.html">click here to see history</a></h3>
+</body>
+<script>
+   const app = new Vue({
+ el: "#app",
+ data: {
+ },
+ data() {
+    return {
+      previous: '',
+      current: '',
+      operator: null,
+      operatorClicked: false,
+    }
+  },
+  methods: {
+    clear() {
+      this.current = '';
+    },
+
+    deletePrev() {
+      this.current = this.current.toString().slice(0, -1)
+    },
+
+    plusMinus() {
+      var n = this.current
+      n *= -1
+      this.current = n;
+    },
+
+    setPrevious() {
+      this.previous = this.current;
+      this.operatorClicked = true;
+    },
+
+    convertToBinary() {
+      const curr = parseFloat(this.current)
+      var bin = curr.toString(2)
+      this.current = bin;
+      
+      console.log("to binary: " + bin)
+      const savedHistory = JSON.parse(localStorage.getItem('savedHistory')) || [];
+      const history = {
+        operation: 'to binary',
+        data: this.current
+      };      
+      savedHistory.push(history);
+      localStorage.setItem('savedHistory', JSON.stringify(savedHistory))
+    },
+
+    convertToHex() {
+      
+      const curr = parseFloat(this.current)
+      var hex = curr.toString(16)
+      this.current = hex;
+      console.log(" to hexadecimal: " + hex)
+      const savedHistory = JSON.parse(localStorage.getItem('savedHistory')) || [];
+      const history = {
+        operation: 'to hexadecimal',
+        data: this.current
+      };      
+      savedHistory.push(history);
+      localStorage.setItem('savedHistory', JSON.stringify(savedHistory))
+    },
+
+    convertToOctal() {
+      const curr = parseFloat(this.current)
+      var oct = curr.toString(8)
+      this.current = oct;
+      console.log("to octal: " + oct)
+      const savedHistory = JSON.parse(localStorage.getItem('savedHistory')) || [];
+      const history = {
+        operation: 'to octal',
+        data: this.current
+      };      
+      savedHistory.push(history);
+      localStorage.setItem('savedHistory', JSON.stringify(savedHistory))
+    },
+
+    convertToDecimal() {
+      const curr = parseFloat(this.current)
+      var dec = parseInt(this.current, 2) || parseInt(this.current, 16) || parseInt(this.current, 8);
+      console.log("to decimal: " + dec)
+      this.current = dec
+      const savedHistory = JSON.parse(localStorage.getItem('savedHistory')) || [];
+      const history = {
+        operation: 'to decimal',
+        data: this.current
+      };      
+      savedHistory.push(history);
+      localStorage.setItem('savedHistory', JSON.stringify(savedHistory))
+    },
+
+    append(number) {
+      if (this.operatorClicked) {
+        this.current = '';
+        this.operatorClicked = false;
+      }
+      this.current = `${this.current}${number}`;
+    },
+
+    dot() {
+      if (this.current.indexOf('.') === -1) {
+        this.append('.');
+      }
+    },
+
+    division() {
+      this.operator = (a, b) => b / a;
+      this.setPrevious();          
+    },
+
+    multiplication() {
+      this.operator = (a, b) => a * b;
+      this.setPrevious();
+    },
+
+    subtraction() {
+      this.operator = (a, b) => b - a;
+      this.setPrevious();
+    },
+
+    addition() {
+      this.operator = (a, b) => a + b;
+      this.setPrevious();
+
+    },
+
+    equal() {
+      this.current = `${this.operator(parseFloat(this.current), parseFloat(this.previous))}`;
+      this.previous = null;
+      const savedHistory = JSON.parse(localStorage.getItem('savedHistory')) || [];
+      const history = {
+        operation: 'solution ',
+        data: this.current
+      };      
+      savedHistory.push(history);
+      localStorage.setItem('savedHistory', JSON.stringify(savedHistory))
+    }
+
+  }
+
+ });
+
+</script>
+</html>
